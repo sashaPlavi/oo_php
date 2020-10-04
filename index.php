@@ -1,90 +1,17 @@
 <?php
+require('user_validator.php');
+$username = null;
+$email = null;
 
-class User
-{
-  protected $username;
-  private $useremail;
-  public $userrole = 'member';
-
-  public function __construct($username, $useremail)
-  {
-    $this->username = $username;
-    $this->useremail = $useremail;
-  }
-
-  public function addFriend()
-  {
-
-    return  $this->username . ' new friend added';
-  }
-  public function message()
-  {
-    return $this->useremail . ' user ' . $this->username . ', admin has sent a message';
-  }
-
-  // GETTERS
-  public function get_email()
-  {
-    return  $this->useremail;
-  }
-
-
-  //SETTERS
-  public function set_email($useremail)
-  {
-    if (stripos($useremail, '@') > 0) {
-      $this->useremail = $useremail;
-      return 'email has been set';
-    } else {
-      return 'invalid email';
-    }
-  }
+if (isset($_POST['submit'])) {
+  $validation = new User_validator($_POST);
+  $errors = $validation->validateForm();
+  $username = htmlspecialchars($_POST['username']);
+  $email = htmlspecialchars($_POST['email']);
 }
 
-class AdminUser extends User
-{
-  public $userlevel;
-  public $userrole = 'admin';
-  public function __construct($username, $useremail, $userlevel)
-  {
-    // $this->username = $username;
-    // $this->useremail = $useremail;
-    parent::__construct($username, $useremail);
-    $this->userlevel = $userlevel;
-    // this->username acces
-    $this->useremail = $useremail;
-  }
-
-  public function message()
-  {
-    return $this->useremail . ' user ' . $this->username . ', admin has sent a message';
-  }
-}
-
-
-$sasha = new User('Sasha', 'sasha@sasha.com');
-$slavko = new User('Slavko', 'Slavko@slavko.com');
-$sale_admin = new AdminUser('Sale', 'sale@damin.com', 5);
-//echo $sasha->username . '</br>';
-//echo $sasha->useremail . '</br>';
-echo $sasha->userrole . '</br>';
-
-
-echo $sasha->addFriend() . '</br>';
-//print_r(get_class_vars('User'));
-//print_r(get_class_methods('User'));
-
-//echo $sasha->set_email('joshi@joma.com').'</br>';
-//echo $slavko->get_email();
-
-echo $sale_admin->get_email() . '</br>';
-echo $sale_admin->userlevel . '</br>';
-echo $sale_admin->userrole . '</br>';
-echo $sasha->message() . '</br>';
-echo $sale_admin->message() . '</br>';
 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -92,10 +19,29 @@ echo $sale_admin->message() . '</br>';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OO_PHP</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>form validation</title>
 </head>
 
 <body>
+  <div class="new-user">
+    <H3>Create a new user</H3>
+    <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post">
+      <label>Username</label>
+      <input type="text" name="username" value="<?php echo $username ?? ''; ?>">
+      <div class="error">
+        <?php echo $errors['username'] ?? '';  ?>
+      </div>
+      <label>Email</label>
+      <input type="text" name="email" value="<?php echo $email ?? ''; ?>">
+      <div class="error">
+        <?php echo $errors['email'] ?? '';  ?>
+      </div>
+
+      <input type="submit" value="submit" name='submit'>
+
+    </form>
+  </div>
 
 </body>
 
